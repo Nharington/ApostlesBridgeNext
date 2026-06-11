@@ -7,9 +7,9 @@ import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.config.Ignored;
 import com.medua.apostlesbridgenext.types.IgnoredType;
 import com.medua.apostlesbridgenext.util.ConfigUtil;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.network.ServerInfo;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.player.LocalPlayer;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.enums.ReadyState;
 import org.java_websocket.handshake.ServerHandshake;
@@ -54,7 +54,7 @@ public class WebSocketHandler {
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
-                if (MinecraftClient.getInstance().player != null) {
+                if (Minecraft.getInstance().player != null) {
                     LOGGER.debug("Player detected! Proceeding with WebSocket connection.");
                     if (shouldConnect()) {
                         connect();
@@ -73,7 +73,7 @@ public class WebSocketHandler {
             return;
         }
 
-        if (MinecraftClient.getInstance().player == null) {
+        if (Minecraft.getInstance().player == null) {
             return;
         }
 
@@ -170,7 +170,7 @@ public class WebSocketHandler {
                                         outputMessage = outputMessage.replace("%messageColor%", Config.getFormattingColors().getMessageColor());
                                     }
 
-                                    MinecraftClient client = MinecraftClient.getInstance();
+                                    Minecraft client = Minecraft.getInstance();
                                     String finalOutputMessage = outputMessage;
                                     client.execute(() -> MessageHandler.sendMessageWithLinks(finalOutputMessage, false, urls));
                                 }
@@ -264,8 +264,8 @@ public class WebSocketHandler {
     }
 
     private boolean isOnHypixel() {
-        ServerInfo serverInfo = MinecraftClient.getInstance().getCurrentServerEntry();
-        return serverInfo != null && serverInfo.address != null && serverInfo.address.contains("hypixel.net");
+        ServerData serverInfo = Minecraft.getInstance().getCurrentServer();
+        return serverInfo != null && serverInfo.ip != null && serverInfo.ip.contains("hypixel.net");
     }
 
     private String getServerURL() {
@@ -273,9 +273,9 @@ public class WebSocketHandler {
     }
 
     private String getServerURL(String token) {
-        ClientPlayerEntity player = MinecraftClient.getInstance().player;
+        LocalPlayer player = Minecraft.getInstance().player;
         String username = player != null ? player.getName().getString() : "";
-        String uuid = player != null ? player.getUuidAsString() : "";
+        String uuid = player != null ? player.getStringUUID() : "";
 
         String serverUrl = Config.getURL().trim();
         while (serverUrl.endsWith("/")) {

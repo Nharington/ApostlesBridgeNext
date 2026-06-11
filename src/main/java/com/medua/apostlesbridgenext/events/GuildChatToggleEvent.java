@@ -5,7 +5,7 @@ import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.config.ConfigSync;
 import com.medua.apostlesbridgenext.handler.RespectGuildToggleMessages;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 
 public class GuildChatToggleEvent {
     private static final String DISABLED_GUILD_CHAT = "Disabled guild chat!";
@@ -41,7 +41,7 @@ public class GuildChatToggleEvent {
         });
     }
 
-    private static Boolean matchGuildChatToggle(Text message) {
+    private static Boolean matchGuildChatToggle(Component message) {
         String text = message.getString();
         if (text.equals(DISABLED_GUILD_CHAT)) {
             return false;
