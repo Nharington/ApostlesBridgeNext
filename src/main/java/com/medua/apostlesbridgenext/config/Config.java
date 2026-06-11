@@ -27,7 +27,8 @@ public class Config {
     private static String guild = "";
 
     private static int generalMode = 2;
-    private static int previousGeneralMode = 2;
+    private static boolean respectGuildChatToggle = true;
+    private static boolean guildChatEnabled = true;
     private static int imagePreviewSize = ImagePreviewSize.MEDIUM.ordinal();
     private static boolean emojiConversionEnabled = false;
 
@@ -49,7 +50,8 @@ public class Config {
             guild = json.has("guild") ? json.get("guild").getAsString() : guild;
             token = json.has("token") ? json.get("token").getAsString() : token;
             generalMode = json.has("generalMode") ? json.get("generalMode").getAsInt() : generalMode;
-            previousGeneralMode = json.has("previousGeneralMode") ? json.get("previousGeneralMode").getAsInt() : previousGeneralMode;
+            respectGuildChatToggle = json.has("respectGuildChatToggle") ? json.get("respectGuildChatToggle").getAsBoolean() : respectGuildChatToggle;
+            guildChatEnabled = json.has("guildChatEnabled") ? json.get("guildChatEnabled").getAsBoolean() : guildChatEnabled;
             imagePreviewSize = json.has("imagePreviewSize") ? clampPreviewSize(json.get("imagePreviewSize").getAsInt()) : imagePreviewSize;
             emojiConversionEnabled = json.has("emojiConversionEnabled") ? json.get("emojiConversionEnabled").getAsBoolean() : emojiConversionEnabled;
 
@@ -101,7 +103,8 @@ public class Config {
         json.addProperty("guild", guild);
         json.addProperty("token", token);
         json.addProperty("generalMode", generalMode);
-        json.addProperty("previousGeneralMode", previousGeneralMode);
+        json.addProperty("respectGuildChatToggle", respectGuildChatToggle);
+        json.addProperty("guildChatEnabled", guildChatEnabled);
         json.addProperty("imagePreviewSize", imagePreviewSize);
         json.addProperty("emojiConversionEnabled", emojiConversionEnabled);
 
@@ -158,6 +161,18 @@ public class Config {
         return ImagePreviewSize.values()[clampPreviewSize(imagePreviewSize)];
     }
 
+    public static boolean isRespectGuildChatToggleEnabled() {
+        return respectGuildChatToggle;
+    }
+
+    public static boolean isGuildChatEnabled() {
+        return guildChatEnabled;
+    }
+
+    public static boolean isBlockedByGuildChatToggle() {
+        return BridgeConnectionPolicy.isBlockedByGuildChatToggle(generalMode, respectGuildChatToggle, guildChatEnabled);
+    }
+
     public static boolean isEmojiConversionEnabled() {
         return emojiConversionEnabled;
     }
@@ -180,23 +195,14 @@ public class Config {
 
     public static void setGeneralMode(int newGeneralMode) {
         generalMode = newGeneralMode;
-        if (newGeneralMode != 0) {
-            previousGeneralMode = newGeneralMode;
-        }
     }
 
-    public static void setBridgeChatEnabled(boolean enabled) {
-        if (enabled) {
-            if (generalMode == 0) {
-                generalMode = previousGeneralMode;
-            }
-            return;
-        }
+    public static void setRespectGuildChatToggleEnabled(boolean enabled) {
+        respectGuildChatToggle = enabled;
+    }
 
-        if (generalMode != 0) {
-            previousGeneralMode = generalMode;
-            generalMode = 0;
-        }
+    public static void setGuildChatEnabled(boolean enabled) {
+        guildChatEnabled = enabled;
     }
 
     public static void setImagePreviewSize(int newImagePreviewSize) {

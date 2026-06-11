@@ -3,7 +3,7 @@ package com.medua.apostlesbridgenext.client;
 import com.medua.apostlesbridgenext.generated.gen.BuildConfig;
 import com.medua.apostlesbridgenext.commands.ApostlesCommand;
 import com.medua.apostlesbridgenext.config.Config;
-import com.medua.apostlesbridgenext.events.GuildToggleEvent;
+import com.medua.apostlesbridgenext.events.GuildChatToggleEvent;
 import com.medua.apostlesbridgenext.handler.ImagePreviewHandler;
 import com.medua.apostlesbridgenext.events.PlayerJoinEvent;
 import com.medua.apostlesbridgenext.handler.LogHandler;
@@ -12,7 +12,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 
 public class ApostlesBridgeNextClient implements ClientModInitializer {
-
     public static final String MODID = BuildConfig.MODID;
     public static final String VERSION = BuildConfig.VERSION;
 
@@ -29,13 +28,13 @@ public class ApostlesBridgeNextClient implements ClientModInitializer {
         ApostlesCommand.register(this);
 
         //REGISTER EVENTS
-        GuildToggleEvent.register(this);
         ClientPlayConnectionEvents.JOIN.register((handler, sender, client) -> {
             PlayerJoinEvent.onPlayerJoin();
             getWebSocketHandler().restartWebSocket();
         });
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> getWebSocketHandler().restartWebSocket(false));
         ImagePreviewHandler.register();
+        GuildChatToggleEvent.register(this);
 
         // LOAD CONFIG
         Config.loadConfig();

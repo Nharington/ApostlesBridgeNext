@@ -46,6 +46,10 @@ public class MessageHandler {
         sendMessage(getTextForMessage(message, prefix));
     }
 
+    public static void sendSystemMessage(String message) {
+        sendMessage(Text.literal(getPrefix(true, true)).append(Text.literal(message)));
+    }
+
     public static void sendMessageWithLinks(String message, boolean prefix, List<String> urls) {
         MinecraftClient client = MinecraftClient.getInstance();
         if (!client.isOnThread()) {

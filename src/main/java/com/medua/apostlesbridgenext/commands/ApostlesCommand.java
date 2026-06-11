@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ApostlesCommand {
-
     static final String COMMAND_NAME = "apostles";
     static final List<String> COMMAND_ALIASES = new ArrayList<>(List.of(COMMAND_NAME, "apostlesbridge", "bridge"));
 
@@ -158,7 +157,7 @@ public class ApostlesCommand {
 
     public static boolean proceedCommand(ApostlesBridgeNextClient apostlesBridge, String command, String[] args) {
         if (args.length == 0) {
-            openScreenNextTick(ConfigGuiManager.openConfigGui());
+            openScreenNextTick(ConfigGuiManager.openConfigGui(apostlesBridge));
             return true;
         } else if (args.length > 1 && args[0].equalsIgnoreCase("debug")) {
             sendDebugMessage(parseDebugMessage(String.join(" ", Arrays.copyOfRange(args, 1, args.length))));

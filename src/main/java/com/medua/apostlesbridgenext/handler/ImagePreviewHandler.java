@@ -25,8 +25,7 @@ public final class ImagePreviewHandler {
     private static final Map<String, ImagePreview> PREVIEWS = new ConcurrentHashMap<>();
     private static final Set<String> PREVIEWABLE_URLS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private ImagePreviewHandler() {
-    }
+    private ImagePreviewHandler() { }
 
     public static void register() {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {

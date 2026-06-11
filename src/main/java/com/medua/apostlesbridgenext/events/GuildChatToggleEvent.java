@@ -3,11 +3,11 @@ package com.medua.apostlesbridgenext.events;
 import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
 import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.config.ConfigSync;
+import com.medua.apostlesbridgenext.handler.RespectGuildToggleMessages;
 import net.fabricmc.fabric.api.client.message.v1.ClientReceiveMessageEvents;
 import net.minecraft.text.Text;
 
-public class GuildToggleEvent {
-
+public class GuildChatToggleEvent {
     private static final String DISABLED_GUILD_CHAT = "Disabled guild chat!";
     private static final String ENABLED_GUILD_CHAT = "Enabled guild chat!";
 
@@ -18,9 +18,25 @@ public class GuildToggleEvent {
                 return;
             }
 
-            Config.setBridgeChatEnabled(enabled);
+            Config.setGuildChatEnabled(enabled);
             Config.saveConfig();
             ConfigSync.syncFromJson();
+
+            if (Config.getGeneralMode() == 0 || !Config.isRespectGuildChatToggleEnabled()) {
+                return;
+            }
+
+            if (enabled) {
+                if (apostlesBridge.getWebSocketHandler().canReconnectAfterGuildChatEnabled()) {
+                    RespectGuildToggleMessages.sendSettingMessage("Reconnecting to WebSocket because ", " is enabled...");
+                    apostlesBridge.getWebSocketHandler().reconnectAfterGuildChatEnabled();
+                } else {
+                    apostlesBridge.getWebSocketHandler().restartWebSocket();
+                }
+                return;
+            }
+
+            RespectGuildToggleMessages.sendSettingMessage(apostlesBridge.getWebSocketHandler().isConnected() ? "WebSocket disconnected because " : "WebSocket remains paused because ", " is enabled.");
             apostlesBridge.getWebSocketHandler().restartWebSocket();
         });
     }

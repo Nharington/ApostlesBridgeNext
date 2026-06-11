@@ -59,6 +59,12 @@ dependencies {
     implementation "org.java-websocket:Java-WebSocket:1.5.4"
     compileOnly "org.java-websocket:Java-WebSocket:1.5.4"
     shadowRuntime "org.java-websocket:Java-WebSocket:1.5.4"
+
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.3"
+}
+
+test {
+    useJUnitPlatform()
 }
 
 tasks.named('shadowJar') {
