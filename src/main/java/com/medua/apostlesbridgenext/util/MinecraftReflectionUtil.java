@@ -7,33 +7,60 @@ public final class MinecraftReflectionUtil {
     private MinecraftReflectionUtil() { }
 
     public static Object createResourceId(String namespace, String path) {
-        try {
-            for (String className : new String[]{"net.minecraft.resources.Identifier", "net.minecraft.resources.ResourceLocation"}) {
-                try {
-                    Class<?> resourceClass = Class.forName(className);
-                    return resourceClass.getMethod("fromNamespaceAndPath", String.class, String.class)
-                        .invoke(null, namespace, path);
-                } catch (ClassNotFoundException ignored) { }
+        ReflectiveOperationException lastException = null;
+        for (String className : new String[]{"net.minecraft.resources.Identifier", "net.minecraft.resources.ResourceLocation", "net.minecraft.class_2960"}) {
+            try {
+                Class<?> resourceClass = Class.forName(className);
+                for (String methodName : new String[]{"fromNamespaceAndPath", "method_60655"}) {
+                    try {
+                        return resourceClass.getMethod(methodName, String.class, String.class).invoke(null, namespace, path);
+                    } catch (NoSuchMethodException exception) {
+                        lastException = exception;
+                    }
+                }
+            } catch (ReflectiveOperationException exception) {
+                lastException = exception;
             }
-            throw new ClassNotFoundException("net.minecraft.resources.Identifier or ResourceLocation");
-        } catch (ReflectiveOperationException exception) {
-            throw new IllegalStateException("Unable to create resource id", exception);
         }
+        throw new IllegalStateException("Unable to create resource id", lastException);
     }
 
     public static Object newInstance(String className, Object... args) {
-        try {
-            Class<?> targetClass = Class.forName(className);
-            for (Constructor<?> constructor : targetClass.getConstructors()) {
-                if (constructor.getParameterCount() != args.length || !areCompatible(constructor.getParameterTypes(), args)) {
-                    continue;
-                }
-                return constructor.newInstance(args);
+        return newInstance(new String[]{className}, args);
+    }
+
+    public static Object newInstance(String[] classNames, Object... args) {
+        ReflectiveOperationException lastException = null;
+        for (String className : classNames) {
+            try {
+                return newInstance(Class.forName(className), args);
+            } catch (ReflectiveOperationException exception) {
+                lastException = exception;
             }
-            throw new NoSuchMethodException(className);
-        } catch (ReflectiveOperationException exception) {
-            throw new IllegalStateException("Unable to create " + className, exception);
         }
+        throw new IllegalStateException("Unable to create " + String.join(" or ", classNames), lastException);
+    }
+
+    private static Object newInstance(Class<?> targetClass, Object... args) throws ReflectiveOperationException {
+        for (Constructor<?> constructor : targetClass.getConstructors()) {
+            if (constructor.getParameterCount() != args.length || !areCompatible(constructor.getParameterTypes(), args)) {
+                continue;
+            }
+            return constructor.newInstance(args);
+        }
+        throw new NoSuchMethodException(targetClass.getName());
+    }
+
+    public static Class<?> forName(String... classNames) {
+        ClassNotFoundException lastException = null;
+        for (String className : classNames) {
+            try {
+                return Class.forName(className);
+            } catch (ClassNotFoundException exception) {
+                lastException = exception;
+            }
+        }
+        throw new IllegalStateException("Unable to find class " + String.join(" or ", classNames), lastException);
     }
 
     public static boolean invokeAny(Object target, String methodName, Class<?>[] preferredParameterTypes, Object... args) {

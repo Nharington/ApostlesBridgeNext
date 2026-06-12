@@ -121,7 +121,7 @@ public class MessageHandler {
     }
 
     private static void addChatMessage(Object chat, Component message) {
-        MinecraftReflectionUtil.invokeAny(chat, new String[]{"addClientSystemMessage", "addMessage"}, new Class<?>[]{Component.class}, message);
+        MinecraftReflectionUtil.invokeAny(chat, new String[]{"addClientSystemMessage", "addMessage", "method_1812"}, new Class<?>[]{Component.class}, message);
     }
 
 }

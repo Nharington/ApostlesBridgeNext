@@ -117,7 +117,10 @@ public final class EmojiUtil {
     private static FontDescription createEmojiFontDescription() {
         Object identifier = MinecraftReflectionUtil.createResourceId(ApostlesBridgeNextClient.MODID, "emoji");
         return (FontDescription) MinecraftReflectionUtil.newInstance(
-            "net.minecraft.network.chat.FontDescription$Resource",
+            new String[]{
+                "net.minecraft.network.chat.FontDescription$Resource",
+                "net.minecraft.class_11719$class_11721"
+            },
             identifier
         );
     }
