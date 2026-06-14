@@ -1,19 +1,5 @@
 package com.medua.apostlesbridgenext.handler;
 
-import com.google.gson.*;
-import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
-import com.medua.apostlesbridgenext.config.BridgeConnectionPolicy;
-import com.medua.apostlesbridgenext.config.Config;
-import com.medua.apostlesbridgenext.config.Ignored;
-import com.medua.apostlesbridgenext.types.IgnoredType;
-import com.medua.apostlesbridgenext.util.ConfigUtil;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ServerData;
-import net.minecraft.client.player.LocalPlayer;
-import org.java_websocket.client.WebSocketClient;
-import org.java_websocket.enums.ReadyState;
-import org.java_websocket.handshake.ServerHandshake;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -22,6 +8,26 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
+
+import org.java_websocket.client.WebSocketClient;
+import org.java_websocket.enums.ReadyState;
+import org.java_websocket.handshake.ServerHandshake;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSyntaxException;
+import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
+import com.medua.apostlesbridgenext.config.BridgeConnectionPolicy;
+import com.medua.apostlesbridgenext.config.Config;
+import com.medua.apostlesbridgenext.config.Ignored;
+import com.medua.apostlesbridgenext.types.IgnoredType;
+import com.medua.apostlesbridgenext.util.ConfigUtil;
+
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ServerData;
+import net.minecraft.client.player.LocalPlayer;
 
 public class WebSocketHandler {
     private static final LogHandler LOGGER = new LogHandler(WebSocketHandler.class);

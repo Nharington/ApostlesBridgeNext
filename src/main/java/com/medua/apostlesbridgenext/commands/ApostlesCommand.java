@@ -1,30 +1,34 @@
 package com.medua.apostlesbridgenext.commands;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
-import com.medua.apostlesbridgenext.config.*;
+import com.medua.apostlesbridgenext.config.Config;
+import com.medua.apostlesbridgenext.config.ConfigGuiManager;
+import com.medua.apostlesbridgenext.config.Ignored;
 import com.medua.apostlesbridgenext.handler.MessageHandler;
 import com.medua.apostlesbridgenext.types.IgnoredType;
 import com.medua.apostlesbridgenext.util.ConfigUtil;
-import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
+
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 public class ApostlesCommand {
     static final String COMMAND_NAME = "apostles";
     static final List<String> COMMAND_ALIASES = new ArrayList<>(List.of(COMMAND_NAME, "apostlesbridge", "bridge"));
 
     ApostlesBridgeNextClient apostlesBridge;
+
     public ApostlesCommand(ApostlesBridgeNextClient apostlesBridge) {
         this.apostlesBridge = apostlesBridge;
     }
@@ -35,115 +39,76 @@ public class ApostlesCommand {
 
         ClientCommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> {
             for (String alias : allCommands) {
-                dispatcher.register(
-                    literal(alias)
-                        // /bridge reconnect
-                        .then(literal("reconnect")
-                            .executes(context -> {
-                                proceedCommand(apostlesBridge, alias, new String[]{"reconnect"});
-                                return 1;
-                            }))
-                        // /bridge status
-                        .then(literal("status")
-                            .executes(context -> {
-                                proceedCommand(apostlesBridge, alias, new String[]{"status"});
-                                return 1;
-                            }))
-                        // /bridge debug [message and urls]
-                        .then(literal("debug")
-                            .executes(context -> {
-                                proceedCommand(apostlesBridge, alias, new String[]{"debug"});
-                                return 1;
-                            })
-                            .then(argument("urls", StringArgumentType.greedyString())
-                                .executes(context -> {
-                                    String urls = StringArgumentType.getString(context, "urls");
-                                    proceedCommand(apostlesBridge, alias, new String[]{"debug", urls});
-                                    return 1;
-                                })))
-                        // /bridge disconnect
-                        .then(literal("disconnect")
-                                .executes(context -> {
-                                    proceedCommand(apostlesBridge, alias, new String[]{"disconnect"});
-                                    return 1;
-                                }))
-                        // /bridge ignore <add|remove|list> [player|origin] [name]
-                        .then(literal("ignore")
-                            .then(literal("add")
-                                .then(literal("player")
-                                    .then(argument("name", StringArgumentType.word())
-                                        .suggests((context, builder) -> {
-                                            // TODO: add player suggestion
-                                            return builder.buildFuture();
-                                        })
-                                        .executes(context -> {
-                                            String name = StringArgumentType.getString(context, "name");
-                                            proceedCommand(apostlesBridge, alias, new String[]{"ignore", "add", "player", name});
-                                            return 1;
-                                        })
-                                    )
-                                )
-                                .then(literal("origin")
-                                    .then(argument("name", StringArgumentType.word())
-                                        .suggests((context, builder) -> {
-                                            // TODO: add player suggestion
-                                            return builder.buildFuture();
-                                        })
-                                        .executes(context -> {
-                                            String name = StringArgumentType.getString(context, "name");
-                                            proceedCommand(apostlesBridge, alias, new String[]{"ignore", "add", "origin", name});
-                                            return 1;
-                                        })
-                                    )
-                                )
-                            )
-                            .then(literal("remove")
-                                .then(literal("player")
-                                    .then(argument("name", StringArgumentType.word())
-                                        .suggests((context, builder) -> {
-                                            // TODO: add player suggestion
-                                            return builder.buildFuture();
-                                        })
-                                        .executes(context -> {
-                                            String name = StringArgumentType.getString(context, "name");
-                                            proceedCommand(apostlesBridge, alias, new String[]{"ignore", "remove", "player", name});
-                                            return 1;
-                                        })
-                                    )
-                                )
-                                .then(literal("origin")
-                                    .then(argument("name", StringArgumentType.word())
-                                        .suggests((context, builder) -> {
-                                            // TODO: add origin suggestion
-                                            return builder.buildFuture();
-                                        })
-                                        .executes(context -> {
-                                            String name = StringArgumentType.getString(context, "name");
-                                            proceedCommand(apostlesBridge, alias, new String[]{"ignore", "remove", "origin", name});
-                                            return 1;
-                                        })
-                                    )
-                                )
-                            )
-                            .then(literal("list")
-                                .executes(context -> {
-                                    proceedCommand(apostlesBridge, alias, new String[]{"ignore", "list"});
-                                    return 1;
-                                })
-                            )
-                        )
-                        // /bridge help
-                        .then(literal("help")
-                            .executes(context -> {
-                                proceedCommand(apostlesBridge, alias, new String[]{"help"});
-                                return 1;
-                            }))
-                        // /bridge
-                        .executes(context -> {
-                            proceedCommand(apostlesBridge, alias, new String[0]);
-                            return 1;
-                        })
-                );
+                LiteralArgumentBuilder<FabricClientCommandSource> command = literal(alias)
+                    // /bridge reconnect
+                    .then(literal("reconnect").executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[] { "reconnect" });
+                        return 1;
+                    }))
+                    // /bridge status
+                    .then(literal("status").executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[] { "status" });
+                        return 1;
+                    }))
+                    // /bridge debug [message and urls]
+                    .then(literal("debug").executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[] { "debug" });
+                        return 1;
+                    }).then(argument("urls", StringArgumentType.greedyString()).executes(context -> {
+                        String urls = StringArgumentType.getString(context, "urls");
+                        proceedCommand(apostlesBridge, alias, new String[] { "debug", urls });
+                        return 1;
+                    })))
+                    // /bridge disconnect
+                    .then(literal("disconnect").executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[] { "disconnect" });
+                        return 1;
+                    }))
+                    // /bridge ignore <add|remove|list> [player|origin] [name]
+                    .then(literal("ignore").then(literal("add").then(literal("player").then(argument("name", StringArgumentType.word()).suggests((context, builder) -> {
+                        // TODO: add player suggestion
+                        return builder.buildFuture();
+                    }).executes(context -> {
+                        String name = StringArgumentType.getString(context, "name");
+                        proceedCommand(apostlesBridge, alias, new String[] { "ignore", "add", "player", name });
+                        return 1;
+                    }))).then(literal("origin").then(argument("name", StringArgumentType.word()).suggests((context, builder) -> {
+                        // TODO: add player suggestion
+                        return builder.buildFuture();
+                    }).executes(context -> {
+                        String name = StringArgumentType.getString(context, "name");
+                        proceedCommand(apostlesBridge, alias, new String[] { "ignore", "add", "origin", name });
+                        return 1;
+                    })))).then(literal("remove").then(literal("player").then(argument("name", StringArgumentType.word()).suggests((context, builder) -> {
+                        // TODO: add player suggestion
+                        return builder.buildFuture();
+                    }).executes(context -> {
+                        String name = StringArgumentType.getString(context, "name");
+                        proceedCommand(apostlesBridge, alias, new String[] { "ignore", "remove", "player", name });
+                        return 1;
+                    }))).then(literal("origin").then(argument("name", StringArgumentType.word()).suggests((context, builder) -> {
+                        // TODO: add origin suggestion
+                        return builder.buildFuture();
+                    }).executes(context -> {
+                        String name = StringArgumentType.getString(context, "name");
+                        proceedCommand(apostlesBridge, alias, new String[] { "ignore", "remove", "origin", name });
+                        return 1;
+                    })))).then(literal("list").executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[] { "ignore", "list" });
+                        return 1;
+                    })))
+                    // /bridge help
+                    .then(literal("help").executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[] { "help" });
+                        return 1;
+                    }))
+                    // /bridge
+                    .executes(context -> {
+                        proceedCommand(apostlesBridge, alias, new String[0]);
+                        return 1;
+                    });
+
+                dispatcher.register(command);
             }
         });
     }
@@ -183,7 +148,7 @@ public class ApostlesCommand {
                 apostlesBridge.getWebSocketHandler().disconnectWebSocket();
                 return true;
             } else if (args[0].equalsIgnoreCase("status")) {
-                MessageHandler.sendMessage("WebSocket connection: "+apostlesBridge.getWebSocketHandler().getStatus());
+                MessageHandler.sendMessage("WebSocket connection: " + apostlesBridge.getWebSocketHandler().getStatus());
                 return true;
             } else if (args[0].equalsIgnoreCase("ignore")) {
                 MessageHandler.sendMessage("Command usage: §§d/bridge ignore <add/remove/list> [player/origin] [name]");
@@ -272,9 +237,7 @@ public class ApostlesCommand {
             }
         }
 
-        String message = messageParts.isEmpty()
-                ? "local websocket-style debug message"
-                : String.join(" ", messageParts);
+        String message = messageParts.isEmpty() ? "local websocket-style debug message" : String.join(" ", messageParts);
         return new DebugMessage(message, urls);
     }
 

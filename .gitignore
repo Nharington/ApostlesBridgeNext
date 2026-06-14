@@ -4,3 +4,5 @@
 run/
 build/
 .gradle/
+versions/*/bin/
+.settings/org.eclipse.buildship.core.prefs

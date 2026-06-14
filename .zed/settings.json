@@ -1,0 +1,34 @@
+{
+  "languages": {
+    "Java": {
+      "formatter": [
+        "language_server",
+        {
+          "code_action": "source.organizeImports"
+        }
+      ],
+      "format_on_save": "on",
+      "preferred_line_length": 200
+    }
+  },
+  "lsp": {
+    "jdtls": {
+      "initialization_options": {
+        "settings": {
+          "java": {
+            "format": {
+              "enabled": true,
+              "settings": {
+                "profile": "ApostlesBridgeNext",
+                "url": ".settings/java-formatter.xml"
+              }
+            },
+            "saveActions": {
+              "organizeImports": true
+            }
+          }
+        }
+      }
+    }
+  }
+}

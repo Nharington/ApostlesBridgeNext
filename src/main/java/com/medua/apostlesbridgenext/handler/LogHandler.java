@@ -1,10 +1,10 @@
 package com.medua.apostlesbridgenext.handler;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class LogHandler {
     private final Class<?> logClass;

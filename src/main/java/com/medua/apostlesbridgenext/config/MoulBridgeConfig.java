@@ -1,43 +1,38 @@
 package com.medua.apostlesbridgenext.config;
 
+import java.util.List;
+
 import com.google.gson.annotations.Expose;
 import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
 import com.medua.apostlesbridgenext.util.ColorUtil;
+
 import io.github.notenoughupdates.moulconfig.Config;
 import io.github.notenoughupdates.moulconfig.Social;
-import io.github.notenoughupdates.moulconfig.annotations.*;
+import io.github.notenoughupdates.moulconfig.annotations.Accordion;
+import io.github.notenoughupdates.moulconfig.annotations.Category;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorBoolean;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorDropdown;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigEditorText;
+import io.github.notenoughupdates.moulconfig.annotations.ConfigOption;
 import io.github.notenoughupdates.moulconfig.common.MyResourceLocation;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
 import io.github.notenoughupdates.moulconfig.processor.ConfigProcessorDriver;
 import io.github.notenoughupdates.moulconfig.processor.MoulConfigProcessor;
-import java.util.List;
 
 public class MoulBridgeConfig extends Config {
 
-    private static final MyResourceLocation DISCORD = new MyResourceLocation(
-        "apostlesbridgenext",
-        "discord.png"
-    );
+    private static final MyResourceLocation DISCORD = new MyResourceLocation("apostlesbridgenext", "discord.png");
 
-    private static final MyResourceLocation GITHUB = new MyResourceLocation(
-        "apostlesbridgenext",
-        "github.png"
-    );
+    private static final MyResourceLocation GITHUB = new MyResourceLocation("apostlesbridgenext", "github.png");
 
-    private static final MyResourceLocation FORUMS = new MyResourceLocation(
-        "apostlesbridgenext",
-        "hypixel.png"
-    );
+    private static final MyResourceLocation FORUMS = new MyResourceLocation("apostlesbridgenext", "hypixel.png");
 
     public static final MoulBridgeConfig CONFIG = new MoulBridgeConfig();
     public static final MoulConfigProcessor<MoulBridgeConfig> processor;
 
     static {
         processor = MoulConfigProcessor.withDefaults(CONFIG);
-        processor.registerConfigEditor(
-            ConfigEditorMessagePreview.class,
-            (option, ignored) -> new MessagePreviewEditor(option)
-        );
+        processor.registerConfigEditor(ConfigEditorMessagePreview.class, (option, ignored) -> new MessagePreviewEditor(option));
         ConfigProcessorDriver driver = new ConfigProcessorDriver(processor);
         driver.processConfig(CONFIG);
     }
@@ -57,26 +52,18 @@ public class MoulBridgeConfig extends Config {
     public static class General {
 
         @Expose
-        @ConfigOption(
-            name = "WebSocket URL",
-            desc = "URL used to connect to the websocket"
-        )
+        @ConfigOption(name = "WebSocket URL", desc = "URL used to connect to the websocket")
         @ConfigEditorText
         public String url = "";
 
         @Expose
-        @ConfigOption(
-            name = "WebSocket Token",
-            desc = "Authentication token obtained from /token"
-        )
+        @ConfigOption(name = "WebSocket Token", desc = "Authentication token obtained from /token")
         @ConfigEditorText
         public String token = "";
 
         @Expose
         @ConfigOption(name = "Guild", desc = "Your guild")
-        @ConfigEditorDropdown(
-            values = { "Apostles", "Apostles Prime", "Apostles Lite" }
-        )
+        @ConfigEditorDropdown(values = { "Apostles", "Apostles Prime", "Apostles Lite" })
         public int guild = 0;
 
         @Expose
@@ -85,18 +72,12 @@ public class MoulBridgeConfig extends Config {
         public int generalMode = 1;
 
         @Expose
-        @ConfigOption(
-            name = "Respect /g toggle",
-            desc = "Pause the bridge when guild chat is disabled via /g toggle"
-        )
+        @ConfigOption(name = "Respect /g toggle", desc = "Pause the bridge when guild chat is disabled via /g toggle")
         @ConfigEditorBoolean
         public boolean respectGuildChatToggle = true;
 
         @Expose
-        @ConfigOption(
-            name = "Image Preview Size",
-            desc = "Default size for hovered image previews"
-        )
+        @ConfigOption(name = "Image Preview Size", desc = "Default size for hovered image previews")
         @ConfigEditorDropdown(values = { "XS", "S", "M", "L" })
         public int imagePreviewSize = 2;
     }
@@ -104,10 +85,7 @@ public class MoulBridgeConfig extends Config {
     public static class Formatting {
 
         @Expose
-        @ConfigOption(
-            name = "Message Preview",
-            desc = "Preview of the current chat formatting"
-        )
+        @ConfigOption(name = "Message Preview", desc = "Preview of the current chat formatting")
         @ConfigEditorMessagePreview
         public boolean messagePreview = true;
 
@@ -122,10 +100,7 @@ public class MoulBridgeConfig extends Config {
         public Prefixes prefixes = new Prefixes();
 
         @Expose
-        @ConfigOption(
-            name = "Emoji Conversion",
-            desc = "Convert common Discord emoji shortcodes into emoji\n\u00A7836 emojis converted. Request more in Bridge (not all will be added)."
-        )
+        @ConfigOption(name = "Emoji Conversion", desc = "Convert common Discord emoji shortcodes into emoji\n\u00A7836 emojis converted. Request more in Bridge (not all will be added).")
         @ConfigEditorBoolean
         public boolean emojiConversionEnabled = false;
     }
@@ -133,10 +108,7 @@ public class MoulBridgeConfig extends Config {
     public static class Dev {
 
         @Expose
-        @ConfigOption(
-            name = "Connection Debug Messages",
-            desc = "Show WebSocket connection attempts, successes, failures, and disconnects in chat"
-        )
+        @ConfigOption(name = "Connection Debug Messages", desc = "Show WebSocket connection attempts, successes, failures, and disconnects in chat")
         @ConfigEditorBoolean
         public boolean connectionDebugMessages = false;
     }
@@ -146,20 +118,17 @@ public class MoulBridgeConfig extends Config {
         @Expose
         @ConfigOption(name = "Origin Color", desc = "Color for origin messages")
         @ConfigEditorDropdown
-        public ColorUtil.MinecraftColor originColor =
-            ColorUtil.MinecraftColor.DARK_GREEN;
+        public ColorUtil.MinecraftColor originColor = ColorUtil.MinecraftColor.DARK_GREEN;
 
         @Expose
         @ConfigOption(name = "User Color", desc = "Color for usernames")
         @ConfigEditorDropdown
-        public ColorUtil.MinecraftColor userColor =
-            ColorUtil.MinecraftColor.AQUA;
+        public ColorUtil.MinecraftColor userColor = ColorUtil.MinecraftColor.AQUA;
 
         @Expose
         @ConfigOption(name = "Message Color", desc = "Color for messages")
         @ConfigEditorDropdown
-        public ColorUtil.MinecraftColor messageColor =
-            ColorUtil.MinecraftColor.WHITE;
+        public ColorUtil.MinecraftColor messageColor = ColorUtil.MinecraftColor.WHITE;
     }
 
     public static class Prefixes {
@@ -192,33 +161,13 @@ public class MoulBridgeConfig extends Config {
 
     @Override
     public StructuredText getTitle() {
-        return StructuredText.of(
-            "ApostlesBridgeNext v" + ApostlesBridgeNextClient.VERSION + " by "
-        )
-            .append(StructuredText.of("Medua").darkPurple())
-            .append(" & ")
-            .append(StructuredText.of("IcyRetro").darkPurple());
+        return StructuredText.of("ApostlesBridgeNext v" + ApostlesBridgeNextClient.VERSION
+            + " by ").append(StructuredText.of("Medua").darkPurple()).append(" & ").append(StructuredText.of("IcyRetro").darkPurple());
     }
 
     @Override
     public List<Social> getSocials() {
-        return List.of(
-            Social.forLink(
-                StructuredText.of("GitHub"),
-                GITHUB,
-                "https://github.com/Qaiji/ApostlesBridgeNext"
-            ),
-            Social.forLink(
-                StructuredText.of("Discord"),
-                DISCORD,
-                "https://discord.gg/76BwVqhK2H"
-            ),
-            Social.forLink(
-                StructuredText.of("Hypixel Forums"),
-                FORUMS,
-                "https://hypixel.net/threads/5565942/"
-            )
-        );
+        return List.of(Social.forLink(StructuredText.of("GitHub"), GITHUB, "https://github.com/Qaiji/ApostlesBridgeNext"), Social.forLink(StructuredText.of("Discord"), DISCORD, "https://discord.gg/76BwVqhK2H"), Social.forLink(StructuredText.of("Hypixel Forums"), FORUMS, "https://hypixel.net/threads/5565942/"));
     }
 
     @Override

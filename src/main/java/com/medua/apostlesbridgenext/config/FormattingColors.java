@@ -5,10 +5,11 @@ public class FormattingColors {
     String userColor;
     String messageColor;
 
-    public FormattingColors () {
-        this("§2","§b","§r");
+    public FormattingColors() {
+        this("§2", "§b", "§r");
     }
-    public FormattingColors (String originColor, String userColor, String messageColor) {
+
+    public FormattingColors(String originColor, String userColor, String messageColor) {
         this.originColor = originColor;
         this.userColor = userColor;
         this.messageColor = messageColor;

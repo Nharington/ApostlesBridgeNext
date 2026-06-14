@@ -7,10 +7,11 @@ public class FormattingNames {
     String g2;
     String g3;
 
-    public FormattingNames () {
-        this("Bridge", "Discord","Guild 1","Guild 2", "Guild 3");
+    public FormattingNames() {
+        this("Bridge", "Discord", "Guild 1", "Guild 2", "Guild 3");
     }
-    public FormattingNames (String bridge, String discord, String g1, String g2, String g3) {
+
+    public FormattingNames(String bridge, String discord, String g1, String g2, String g3) {
         this.bridge = bridge;
         this.discord = discord;
         this.g1 = g1;

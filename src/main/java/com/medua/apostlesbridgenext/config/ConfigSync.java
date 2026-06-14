@@ -3,11 +3,7 @@ package com.medua.apostlesbridgenext.config;
 import com.medua.apostlesbridgenext.util.ColorUtil;
 
 public class ConfigSync {
-    private static final String[] GUILDS = {
-            "Apostles",
-            "Apostles Prime",
-            "Apostles Lite"
-    };
+    private static final String[] GUILDS = { "Apostles", "Apostles Prime", "Apostles Lite" };
 
     public static void syncFromJson() {
         MoulBridgeConfig moulConfig = MoulBridgeConfig.CONFIG;

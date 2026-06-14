@@ -1,7 +1,7 @@
 package com.medua.apostlesbridgenext.config;
 
 public final class BridgeConnectionPolicy {
-    private BridgeConnectionPolicy() { }
+    private BridgeConnectionPolicy() {}
 
     public static boolean shouldConnect(int generalMode, boolean respectGuildChatToggle, boolean guildChatEnabled, boolean onHypixel) {
         if (isBlockedByGuildChatToggle(generalMode, respectGuildChatToggle, guildChatEnabled)) {

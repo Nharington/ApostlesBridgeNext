@@ -1,24 +1,26 @@
 package com.medua.apostlesbridgenext.handler;
 
+import java.net.URI;
+import java.util.List;
+
 import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
 import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.types.LinkPreviewType;
 import com.medua.apostlesbridgenext.util.EmojiUtil;
 import com.medua.apostlesbridgenext.util.MinecraftReflectionUtil;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 
-import java.net.URI;
-import java.util.List;
-
 public class MessageHandler {
     public static final String MOD_PREFIX = "AB";
     private static final String PREFIX_SEPARATOR = " > ";
 
     ApostlesBridgeNextClient apostlesBridge;
+
     public MessageHandler(ApostlesBridgeNextClient apostlesBridge) {
         this.apostlesBridge = apostlesBridge;
     }
@@ -94,8 +96,7 @@ public class MessageHandler {
 
                 LinkPreviewType finalPreviewType = previewType;
                 Component imageComponent = Component.literal(label).withStyle(style -> {
-                    style = style.withClickEvent(new ClickEvent.OpenUrl(URI.create(url)))
-                        .withHoverEvent(new HoverEvent.ShowText(Component.literal(hoverText)));
+                    style = style.withClickEvent(new ClickEvent.OpenUrl(URI.create(url))).withHoverEvent(new HoverEvent.ShowText(Component.literal(hoverText)));
                     if (finalPreviewType == LinkPreviewType.IMAGE) {
                         style = style.withInsertion(ImagePreviewHandler.IMAGE_PREVIEW_INSERTION + url);
                     }
@@ -126,7 +127,7 @@ public class MessageHandler {
     }
 
     private static void addChatMessage(Object chat, Component message) {
-        MinecraftReflectionUtil.invokeAny(chat, new String[]{"addClientSystemMessage", "addMessage", "method_1812"}, new Class<?>[]{Component.class}, message);
+        MinecraftReflectionUtil.invokeAny(chat, new String[] { "addClientSystemMessage", "addMessage", "method_1812" }, new Class<?>[] { Component.class }, message);
     }
 
 }

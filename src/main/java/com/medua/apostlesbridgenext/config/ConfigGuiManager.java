@@ -1,6 +1,7 @@
 package com.medua.apostlesbridgenext.config;
 
 import com.medua.apostlesbridgenext.client.ApostlesBridgeNextClient;
+
 import io.github.notenoughupdates.moulconfig.gui.GuiContext;
 import io.github.notenoughupdates.moulconfig.gui.GuiElementComponent;
 import io.github.notenoughupdates.moulconfig.gui.MoulConfigEditor;
@@ -27,11 +28,7 @@ public class ConfigGuiManager {
 
         MoulConfigEditor<MoulBridgeConfig> editor = getEditorInstance();
 
-        MoulConfigScreenComponent screen = new MoulConfigScreenComponent(
-            Component.literal("ApostlesBridgeNext Config"),
-            new GuiContext(new GuiElementComponent(editor)),
-            null
-        ) {
+        MoulConfigScreenComponent screen = new MoulConfigScreenComponent(Component.literal("ApostlesBridgeNext Config"), new GuiContext(new GuiElementComponent(editor)), null) {
             @Override
             public void removed() {
                 super.removed();
@@ -40,11 +37,7 @@ public class ConfigGuiManager {
                     || previousRespectGuildChatToggle != Config.isRespectGuildChatToggleEnabled()
                     || !previousUrl.equals(Config.getURL())
                     || !previousToken.equals(Config.getToken());
-                apostlesBridge.getWebSocketHandler().handleConfigSaved(
-                    previousGeneralMode,
-                    wasBlockedByGuildChatToggle,
-                    connectionSettingsChanged
-                );
+                apostlesBridge.getWebSocketHandler().handleConfigSaved(previousGeneralMode, wasBlockedByGuildChatToggle, connectionSettingsChanged);
             }
         };
 

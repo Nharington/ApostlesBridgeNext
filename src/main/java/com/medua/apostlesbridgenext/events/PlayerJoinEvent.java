@@ -2,6 +2,7 @@ package com.medua.apostlesbridgenext.events;
 
 import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.handler.MessageHandler;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ServerData;
 
@@ -10,7 +11,9 @@ public class PlayerJoinEvent {
 
     public static void onPlayerJoin() {
         Minecraft mc = Minecraft.getInstance();
-        if (mc.player == null) { return; }
+        if (mc.player == null) {
+            return;
+        }
 
         ServerData serverInfo = mc.getCurrentServer();
         String serverIP = serverInfo != null ? serverInfo.ip : "singleplayer";

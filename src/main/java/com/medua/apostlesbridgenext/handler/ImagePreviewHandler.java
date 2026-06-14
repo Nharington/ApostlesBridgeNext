@@ -1,26 +1,27 @@
 package com.medua.apostlesbridgenext.handler;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.net.URI;
+import java.util.Collections;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.util.ImagePreview;
-import net.fabricmc.fabric.api.event.Event;
+
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
+import net.fabricmc.fabric.api.event.Event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Style;
-
-import java.lang.reflect.Field;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.Method;
-import java.lang.reflect.Proxy;
-import java.net.URI;
-import java.util.Locale;
-import java.util.Collections;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 public final class ImagePreviewHandler {
     public static final int PADDING = 5;
@@ -30,7 +31,7 @@ public final class ImagePreviewHandler {
     private static final Map<String, ImagePreview> PREVIEWS = new ConcurrentHashMap<>();
     private static final Set<String> PREVIEWABLE_URLS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
-    private ImagePreviewHandler() { }
+    private ImagePreviewHandler() {}
 
     public static void register() {
         ScreenEvents.AFTER_INIT.register((client, screen, scaledWidth, scaledHeight) -> {
@@ -56,11 +57,7 @@ public final class ImagePreviewHandler {
             Method eventMethod = ScreenEvents.class.getMethod(eventMethodName, Screen.class);
             Object event = eventMethod.invoke(null, screen);
             Class<?> callbackClass = Class.forName(callbackClassName);
-            Object callback = Proxy.newProxyInstance(
-                    callbackClass.getClassLoader(),
-                    new Class<?>[]{callbackClass},
-                    renderInvocationHandler(callbackMethodName)
-            );
+            Object callback = Proxy.newProxyInstance(callbackClass.getClassLoader(), new Class<?>[] { callbackClass }, renderInvocationHandler(callbackMethodName));
 
             ((Event<Object>) event).register(callback);
             return true;
@@ -132,7 +129,7 @@ public final class ImagePreviewHandler {
     }
 
     private static Style getContextHoveredStyle(Object context) {
-        for (String fieldName : new String[]{"clickableTextStyle", "hoveredTextStyle", "field_63849", "field_63848"}) {
+        for (String fieldName : new String[] { "clickableTextStyle", "hoveredTextStyle", "field_63849", "field_63848" }) {
             try {
                 Field field = context.getClass().getDeclaredField(fieldName);
                 field.setAccessible(true);
@@ -140,14 +137,15 @@ public final class ImagePreviewHandler {
                 if (value instanceof Style style) {
                     return style;
                 }
-            } catch (ReflectiveOperationException | RuntimeException ignored) { }
+            } catch (ReflectiveOperationException | RuntimeException ignored) {
+            }
         }
         return null;
     }
 
     private static Style getLegacyHoveredStyle(Minecraft client, int mouseX, int mouseY) {
         try {
-            Method method = getDeclaredMethod(client.gui.getChat().getClass(), new String[]{"getTextStyleAt", "method_1816"}, double.class, double.class);
+            Method method = getDeclaredMethod(client.gui.getChat().getClass(), new String[] { "getTextStyleAt", "method_1816" }, double.class, double.class);
             method.setAccessible(true);
             return (Style) method.invoke(client.gui.getChat(), (double) mouseX, (double) mouseY);
         } catch (ReflectiveOperationException | RuntimeException exception) {
@@ -164,15 +162,16 @@ public final class ImagePreviewHandler {
             constructor.setAccessible(true);
             Object clickHandler = constructor.newInstance(client.font, mouseX, mouseY);
 
-            Method insertMethod = getDeclaredMethod(clickHandlerClass, new String[]{"includeInsertions", "insert", "method_76756"}, boolean.class);
+            Method insertMethod = getDeclaredMethod(clickHandlerClass, new String[] { "includeInsertions", "insert", "method_76756" }, boolean.class);
             insertMethod.setAccessible(true);
             clickHandler = insertMethod.invoke(clickHandler, true);
 
-            Method renderMethod = getDeclaredMethod(client.gui.getChat().getClass(), new String[]{"captureClickableText", "render", "method_75803"}, consumerClass, int.class, int.class, boolean.class);
+            Method renderMethod = getDeclaredMethod(client.gui.getChat().getClass(), new String[] { "captureClickableText", "render",
+                "method_75803" }, consumerClass, int.class, int.class, boolean.class);
             renderMethod.setAccessible(true);
             renderMethod.invoke(client.gui.getChat(), clickHandler, client.getWindow().getGuiScaledHeight(), client.gui.getGuiTicks(), true);
 
-            Method getStyleMethod = getDeclaredMethod(clickHandlerClass, new String[]{"result", "getStyle", "method_75777"});
+            Method getStyleMethod = getDeclaredMethod(clickHandlerClass, new String[] { "result", "getStyle", "method_75777" });
             getStyleMethod.setAccessible(true);
             return (Style) getStyleMethod.invoke(clickHandler);
         } catch (ReflectiveOperationException | RuntimeException exception) {
@@ -234,11 +233,7 @@ public final class ImagePreviewHandler {
             }
 
             String lowerPath = path.toLowerCase(Locale.ROOT);
-            return lowerPath.endsWith(".png")
-                || lowerPath.endsWith(".jpg")
-                || lowerPath.endsWith(".jpeg")
-                || lowerPath.endsWith(".gif")
-                || lowerPath.endsWith(".webp");
+            return lowerPath.endsWith(".png") || lowerPath.endsWith(".jpg") || lowerPath.endsWith(".jpeg") || lowerPath.endsWith(".gif") || lowerPath.endsWith(".webp");
         } catch (IllegalArgumentException exception) {
             return false;
         }

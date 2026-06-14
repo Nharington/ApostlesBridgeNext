@@ -1,17 +1,24 @@
 package com.medua.apostlesbridgenext.config;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.medua.apostlesbridgenext.handler.LogHandler;
 import com.medua.apostlesbridgenext.types.IgnoredType;
-
-import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class Config {
     private static final LogHandler LOGGER = new LogHandler(Config.class);
@@ -20,7 +27,7 @@ public class Config {
     private static final File CONFIG_FILE = new File(CONFIG_FILE_URL);
     private static final Gson GSON = new Gson();
 
-    private static final String[] GENERAL_MODES = {"OFF", "EVERYWHERE", "HYPIXEL ONLY"};
+    private static final String[] GENERAL_MODES = { "OFF", "EVERYWHERE", "HYPIXEL ONLY" };
 
     private static String url = "";
     private static String token = "";
@@ -277,10 +284,7 @@ public class Config {
     }
 
     public enum ImagePreviewSize {
-        EXTRA_SMALL(120, 80),
-        SMALL(160, 110),
-        MEDIUM(220, 150),
-        LARGE(320, 220);
+        EXTRA_SMALL(120, 80), SMALL(160, 110), MEDIUM(220, 150), LARGE(320, 220);
 
         private final int maxWidth;
         private final int maxHeight;
@@ -299,5 +303,3 @@ public class Config {
         }
     }
 }
-
-

@@ -3,6 +3,7 @@ package com.medua.apostlesbridgenext.config;
 import com.medua.apostlesbridgenext.util.ColorUtil;
 import com.medua.apostlesbridgenext.util.EmojiUtil;
 import com.medua.apostlesbridgenext.util.MinecraftReflectionUtil;
+
 import io.github.notenoughupdates.moulconfig.common.IFontRenderer;
 import io.github.notenoughupdates.moulconfig.common.RenderContext;
 import io.github.notenoughupdates.moulconfig.common.text.StructuredText;
@@ -76,28 +77,12 @@ public class MessagePreviewEditor extends GuiOptionEditor {
 
     private static void renderEmojiPreviewLine(RenderContext context, int x, int y, String origin, String user) {
         if (!(context instanceof MoulConfigRenderContext moulContext)) {
-            renderPreviewLine(
-                context,
-                context.getMinecraft().getDefaultFontRenderer(),
-                x,
-                y,
-                origin,
-                user,
-                emojiPreviewMessage()
-            );
+            renderPreviewLine(context, context.getMinecraft().getDefaultFontRenderer(), x, y, origin, user, emojiPreviewMessage());
             return;
         }
 
         Minecraft client = Minecraft.getInstance();
-        drawComponentText(
-            moulContext.getDrawContext(),
-            client.font,
-            emojiPreviewText(origin, user),
-            x,
-            y,
-            ColorUtil.TEXT_WHITE,
-            false
-        );
+        drawComponentText(moulContext.getDrawContext(), client.font, emojiPreviewText(origin, user), x, y, ColorUtil.TEXT_WHITE, false);
     }
 
     private static MutableComponent emojiPreviewText(String origin, String user) {
@@ -119,12 +104,8 @@ public class MessagePreviewEditor extends GuiOptionEditor {
     }
 
     private static void drawComponentText(Object drawContext, Object font, Component text, int x, int y, int color, boolean shadow) {
-        MinecraftReflectionUtil.invokeAny(
-            drawContext,
-            new String[]{"text", "drawString", "drawText", "method_51439"},
-            new Class<?>[]{font.getClass(), Component.class, int.class, int.class, int.class, boolean.class},
-            font, text, x, y, color, shadow
-        );
+        MinecraftReflectionUtil.invokeAny(drawContext, new String[] { "text", "drawString", "drawText", "method_51439" }, new Class<?>[] { font.getClass(), Component.class, int.class, int.class,
+            int.class, boolean.class }, font, text, x, y, color, shadow);
     }
 
     private static String emojiPreviewMessage() {

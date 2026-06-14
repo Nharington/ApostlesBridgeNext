@@ -4,9 +4,7 @@ import java.net.URI;
 import java.util.Locale;
 
 public enum LinkPreviewType {
-    IMAGE,
-    YOUTUBE,
-    TWITCH;
+    IMAGE, YOUTUBE, TWITCH;
 
     public static LinkPreviewType fromUrl(String url) {
         String host = getHost(url);

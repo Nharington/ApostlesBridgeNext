@@ -1,8 +1,8 @@
 package com.medua.apostlesbridgenext.handler;
 
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 class MessageHandlerTest {
     @Test
