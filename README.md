@@ -1,58 +1,97 @@
+# ApostlesBridgeNext
 
-# ApostlesBridgeNext 🌉
+[![Modrinth Version](https://img.shields.io/modrinth/v/apostlesbridgenext?logo=modrinth&label=Modrinth)](https://modrinth.com/mod/apostlesbridgenext)
+[![Modrinth Downloads](https://img.shields.io/modrinth/dt/apostlesbridgenext?logo=modrinth&label=downloads)](https://modrinth.com/mod/apostlesbridgenext)
+[![Minecraft](https://img.shields.io/badge/Minecraft-1.21.10%20%7C%201.21.11%20%7C%2026.1.x-62B47A)](#supported-versions)
+[![Fabric](https://img.shields.io/badge/loader-Fabric-DBD0B4)](https://fabricmc.net/)
+[![Environment](https://img.shields.io/badge/environment-client--side-blue)](#requirements)
 
-**ApostlesBridgeNext**  
-A Fabric 1.21.5+ client-side mod designed for Hypixel SkyBlock. It’s an updated migration of [Qaiji/ApostlesBridge](https://github.com/Qaiji/ApostlesBridge), originally built for Forge 1.8.9. The mod is a bridge (using WebSocket technology) between Minecraft "Guild Chat" on Hypixel Skyblock and a Discord channel.
+A Fabric client-side mod for Hypixel SkyBlock that bridges Hypixel guild chat with a Discord channel through a WebSocket connection.
+
+ApostlesBridgeNext is the modern Fabric successor to [Qaiji/ApostlesBridge](https://github.com/Qaiji/ApostlesBridge), which was originally built for Forge 1.8.9.
+
+## Links
+
+- [Install guide](https://apostles.gg/bridge-install/)
+- [Modrinth page](https://modrinth.com/mod/apostlesbridgenext)
+- [GitHub releases](https://github.com/Qaiji/ApostlesBridgeNext/releases)
+
+## Supported Versions
+
+| Minecraft version | Build target | Notes |
+| --- | --- | --- |
+| `1.21.10` | `mc1.21.10` | Supported |
+| `1.21.11` | `mc1.21.11` | Supported |
+| `26.1.x` | `mc26.1` | Tested on `26.1.1` and `26.1.2` |
+
+Use the JAR that matches your Minecraft version. The `mc26.1` build is intended for the `26.1.x` line.
+
+ApostlesBridgeNext support follows the Minecraft versions that are useful for playing on Hypixel. Older build targets may be removed once Hypixel rotates them out of its supported version range.
 
 ## Features
 
-- Settings to configurate the mod are accessed with `/bridge`
-- Modes to even access bridge messages outside of Hypixel's server
-- A formatting screen to customize your bridge visuals
-- Ignore lists for players and origins:
-  - `/bridge ignore add player <name>`
-  - `/bridge ignore remove origin <name>`
-  - `/bridge ignore list`
-- Other commands:
-  - `/bridge reconnect` — Reconnects the WebSocket session
-  - `/bridge status` — Shows the current WebSocket status
-  - `/bridge help` — Shows command usages
-
-_(WebSocket connection properties are found on the discord)_
-
----
+- Bridge Hypixel guild chat messages into Minecraft through the Apostles bridge WebSocket
+- Choose where bridge messages appear: Hypixel only, everywhere, or off
+- Respect Hypixel's `/g toggle` and disconnect/reconnect the bridge when guild chat is disabled or enabled
+- Customize bridge message formatting in the `/bridge` settings menu
+- Preview image, GIF, and video thumbnails by hovering supported bridge links in chat
+- Convert supported Discord emoji shortcodes into colored emoji previews
+- Ignore specific players or message origins
+- Debug, status, reconnect, and disconnect commands for troubleshooting
 
 ## Installation
 
-1. Download the latest release JAR or build it yourself via Gradle.
-2. Drop it into your <minecraft>/mods folder.
-3. Run Minecraft with Fabric 1.21.5+ (tested with Fabric Loader 0.16.14+ and Fabric API).
+The recommended setup path is the [Apostles bridge install guide](https://apostles.gg/bridge-install/).
 
----
+Manual install:
 
-## Usage
+1. Download the correct release JAR from [Modrinth](https://modrinth.com/mod/apostlesbridgenext) or [GitHub releases](https://github.com/Qaiji/ApostlesBridgeNext/releases).
+2. Install Fabric Loader and Fabric API for your Minecraft version.
+3. Drop the ApostlesBridgeNext JAR into your Minecraft `mods` folder.
+4. Start Minecraft and open `/bridge`.
 
-- Open the settings via `/bridge`
-- Within the GUI:
-  - Set up the WebSocket URL, Token, or Guild ID (optional)
-  - Choose the Mode:
-    - HYPIXEL_ONLY — the bridge messages are only displayed if connected the hypixel.net
-    - EVERYWHERE — the messages are displayed no matter where you are (even in singleplayer)
-    - OFF — the bridge is turned off
-  - (Optional) Update your formatting settings
-- Save and exit to apply changes (ESC or close the GUI).
-- You're good to go!
+Bridge connection details such as the WebSocket URL and token are provided through the Apostles bridge setup flow.
 
----
+## Commands
 
-## Configuration Storage
-
-Settings are automatically saved to the mod’s config files when changed and persist across sessions. (<minecraft>/config/apostles.json)
-
----
+| Command | Description |
+| --- | --- |
+| `/bridge` | Opens the settings menu |
+| `/bridge reconnect` | Clears the current session and reconnects the WebSocket |
+| `/bridge disconnect` | Disconnects the WebSocket |
+| `/bridge status` | Shows the current WebSocket status |
+| `/bridge debug <message/urls>` | Sends a local debug-style bridge message |
+| `/bridge ignore add player <name>` | Ignores bridge messages from a player |
+| `/bridge ignore add origin <name>` | Ignores bridge messages from an origin |
+| `/bridge ignore remove player <name>` | Removes a player from the ignore list |
+| `/bridge ignore remove origin <name>` | Removes an origin from the ignore list |
+| `/bridge ignore list` | Shows ignored players and origins |
+| `/bridge help` | Shows command usage in chat |
 
 ## Requirements
 
-- Minecraft 1.21.5+
-- Fabric Loader 0.16.14+
-- Fabric API
+| Minecraft version | Java | Fabric Loader | Fabric API |
+| --- | --- | --- | --- |
+| `1.21.10` | Java 21 | `0.18.4+` | Required |
+| `1.21.11` | Java 21 | `0.18.4+` | Required |
+| `26.1.x` | Java 25 | `0.19.1+` | Required |
+
+This is a client-side mod.
+
+## Configuration
+
+Open `/bridge` in game to configure the mod. Settings are saved automatically to:
+
+```text
+<minecraft>/config/apostles.json
+```
+
+## Building
+
+To build and collect all configured Minecraft targets locally:
+
+```bash
+./gradlew :1.21.10:collectReleaseJars
+```
+
+Final release JARs are collected in `build/release`.
