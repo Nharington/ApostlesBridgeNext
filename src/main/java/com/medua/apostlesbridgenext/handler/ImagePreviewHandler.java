@@ -2,6 +2,7 @@ package com.medua.apostlesbridgenext.handler;
 
 import com.medua.apostlesbridgenext.config.Config;
 import com.medua.apostlesbridgenext.util.ImagePreview;
+import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
@@ -15,6 +16,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URI;
+import java.util.Locale;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -24,6 +26,7 @@ public final class ImagePreviewHandler {
     public static final int PADDING = 5;
     public static final String IMAGE_PREVIEW_INSERTION = "apostlesbridgenext:image-preview:";
 
+    private static final LogHandler LOGGER = new LogHandler(ImagePreviewHandler.class);
     private static final Map<String, ImagePreview> PREVIEWS = new ConcurrentHashMap<>();
     private static final Set<String> PREVIEWABLE_URLS = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
@@ -42,9 +45,12 @@ public final class ImagePreviewHandler {
             return;
         }
 
-        registerScreenEvent(screen, "afterExtract", "net.fabricmc.fabric.api.client.screen.v1.ScreenEvents$AfterExtract", "afterExtract");
+        if (!registerScreenEvent(screen, "afterExtract", "net.fabricmc.fabric.api.client.screen.v1.ScreenEvents$AfterExtract", "afterExtract")) {
+            LOGGER.warn("Image preview render hook could not be registered.");
+        }
     }
 
+    @SuppressWarnings("unchecked")
     private static boolean registerScreenEvent(Screen screen, String eventMethodName, String callbackClassName, String callbackMethodName) {
         try {
             Method eventMethod = ScreenEvents.class.getMethod(eventMethodName, Screen.class);
@@ -56,8 +62,7 @@ public final class ImagePreviewHandler {
                     renderInvocationHandler(callbackMethodName)
             );
 
-            Method registerMethod = event.getClass().getMethod("register", Object.class);
-            registerMethod.invoke(event, callback);
+            ((Event<Object>) event).register(callback);
             return true;
         } catch (ReflectiveOperationException | RuntimeException exception) {
             return false;
@@ -74,6 +79,7 @@ public final class ImagePreviewHandler {
     }
 
     public static void registerImageUrl(String imageUrl) {
+        PREVIEWABLE_URLS.add(imageUrl);
         PREVIEWABLE_URLS.add(URI.create(imageUrl).toString());
     }
 
@@ -83,8 +89,7 @@ public final class ImagePreviewHandler {
             return;
         }
 
-        Style hoveredStyle = getHoveredStyle(context, client, mouseX, mouseY);
-        String imageUrl = getImageUrl(hoveredStyle);
+        String imageUrl = getHoveredImageUrl(context, client, mouseX, mouseY);
         if (imageUrl == null) {
             return;
         }
@@ -110,22 +115,24 @@ public final class ImagePreviewHandler {
         return Config.getImagePreviewSize().maxHeight();
     }
 
-    private static Style getHoveredStyle(Object context, Minecraft client, int mouseX, int mouseY) {
+    private static String getHoveredImageUrl(Object context, Minecraft client, int mouseX, int mouseY) {
         Style hoveredStyle = getContextHoveredStyle(context);
-        if (hoveredStyle != null) {
-            return hoveredStyle;
+        String imageUrl = getImageUrl(hoveredStyle);
+        if (imageUrl != null) {
+            return imageUrl;
         }
 
         hoveredStyle = getLegacyHoveredStyle(client, mouseX, mouseY);
-        if (hoveredStyle != null) {
-            return hoveredStyle;
+        imageUrl = getImageUrl(hoveredStyle);
+        if (imageUrl != null) {
+            return imageUrl;
         }
 
-        return getDrawnTextHoveredStyle(client, mouseX, mouseY);
+        return getImageUrl(getDrawnTextHoveredStyle(client, mouseX, mouseY));
     }
 
     private static Style getContextHoveredStyle(Object context) {
-        for (String fieldName : new String[]{"clickableTextStyle", "hoveredTextStyle"}) {
+        for (String fieldName : new String[]{"clickableTextStyle", "hoveredTextStyle", "field_63849", "field_63848"}) {
             try {
                 Field field = context.getClass().getDeclaredField(fieldName);
                 field.setAccessible(true);
@@ -150,22 +157,22 @@ public final class ImagePreviewHandler {
 
     private static Style getDrawnTextHoveredStyle(Minecraft client, int mouseX, int mouseY) {
         try {
-            Class<?> consumerClass = forName("net.minecraft.client.font.DrawnTextConsumer", "net.minecraft.class_12225");
-            Class<?> clickHandlerClass = forName("net.minecraft.client.font.DrawnTextConsumer$ClickHandler", "net.minecraft.class_12225$class_12226");
-            Class<?> textRendererClass = forName("net.minecraft.client.font.TextRenderer", "net.minecraft.class_327");
+            Class<?> consumerClass = forName("net.minecraft.client.gui.ActiveTextCollector", "net.minecraft.client.font.DrawnTextConsumer", "net.minecraft.class_12225");
+            Class<?> clickHandlerClass = forName("net.minecraft.client.gui.ActiveTextCollector$ClickableStyleFinder", "net.minecraft.client.font.DrawnTextConsumer$ClickHandler", "net.minecraft.class_12225$class_12226");
+            Class<?> textRendererClass = forName("net.minecraft.client.gui.Font", "net.minecraft.client.font.TextRenderer", "net.minecraft.class_327");
             Constructor<?> constructor = clickHandlerClass.getDeclaredConstructor(textRendererClass, int.class, int.class);
             constructor.setAccessible(true);
             Object clickHandler = constructor.newInstance(client.font, mouseX, mouseY);
 
-            Method insertMethod = getDeclaredMethod(clickHandlerClass, new String[]{"insert", "method_76756"}, boolean.class);
+            Method insertMethod = getDeclaredMethod(clickHandlerClass, new String[]{"includeInsertions", "insert", "method_76756"}, boolean.class);
             insertMethod.setAccessible(true);
-            clickHandler = insertMethod.invoke(clickHandler, client.hasShiftDown());
+            clickHandler = insertMethod.invoke(clickHandler, true);
 
-            Method renderMethod = getDeclaredMethod(client.gui.getChat().getClass(), new String[]{"render", "method_75803"}, consumerClass, int.class, int.class, boolean.class);
+            Method renderMethod = getDeclaredMethod(client.gui.getChat().getClass(), new String[]{"captureClickableText", "render", "method_75803"}, consumerClass, int.class, int.class, boolean.class);
             renderMethod.setAccessible(true);
             renderMethod.invoke(client.gui.getChat(), clickHandler, client.getWindow().getGuiScaledHeight(), client.gui.getGuiTicks(), true);
 
-            Method getStyleMethod = getDeclaredMethod(clickHandlerClass, new String[]{"getStyle", "method_75777"});
+            Method getStyleMethod = getDeclaredMethod(clickHandlerClass, new String[]{"result", "getStyle", "method_75777"});
             getStyleMethod.setAccessible(true);
             return (Style) getStyleMethod.invoke(clickHandler);
         } catch (ReflectiveOperationException | RuntimeException exception) {
@@ -173,12 +180,16 @@ public final class ImagePreviewHandler {
         }
     }
 
-    private static Class<?> forName(String namedClass, String intermediaryClass) throws ClassNotFoundException {
-        try {
-            return Class.forName(namedClass);
-        } catch (ClassNotFoundException exception) {
-            return Class.forName(intermediaryClass);
+    private static Class<?> forName(String... classNames) throws ClassNotFoundException {
+        ClassNotFoundException lastException = null;
+        for (String className : classNames) {
+            try {
+                return Class.forName(className);
+            } catch (ClassNotFoundException exception) {
+                lastException = exception;
+            }
         }
+        throw lastException == null ? new ClassNotFoundException() : lastException;
     }
 
     private static Method getDeclaredMethod(Class<?> owner, String[] names, Class<?>... parameterTypes) throws NoSuchMethodException {
@@ -203,6 +214,33 @@ public final class ImagePreviewHandler {
         }
 
         String imageUrl = openUrl.uri().toString();
-        return PREVIEWABLE_URLS.contains(imageUrl) ? imageUrl : null;
+        if (PREVIEWABLE_URLS.contains(imageUrl) || isPreviewImageUrl(imageUrl)) {
+            return imageUrl;
+        }
+        return null;
+    }
+
+    private static boolean isPreviewImageUrl(String url) {
+        try {
+            URI uri = URI.create(url);
+            String scheme = uri.getScheme();
+            if (scheme == null || (!scheme.equalsIgnoreCase("http") && !scheme.equalsIgnoreCase("https"))) {
+                return false;
+            }
+
+            String path = uri.getPath();
+            if (path == null) {
+                return false;
+            }
+
+            String lowerPath = path.toLowerCase(Locale.ROOT);
+            return lowerPath.endsWith(".png")
+                || lowerPath.endsWith(".jpg")
+                || lowerPath.endsWith(".jpeg")
+                || lowerPath.endsWith(".gif")
+                || lowerPath.endsWith(".webp");
+        } catch (IllegalArgumentException exception) {
+            return false;
+        }
     }
 }

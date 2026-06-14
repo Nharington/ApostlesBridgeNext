@@ -510,31 +510,31 @@ public final class ImagePreview {
     }
 
     private static void drawTexture(Object context, Object textureId, int x, int y, float u, float v, int width, int height, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        MinecraftReflectionUtil.invokeAny(context, new String[]{"blit", "drawTexture"},
+        MinecraftReflectionUtil.invokeAny(context, new String[]{"blit", "drawTexture", "method_25302"},
             new Class<?>[]{RenderPipelines.GUI_TEXTURED.getClass(), textureId.getClass(), int.class, int.class, float.class, float.class, int.class, int.class, int.class, int.class, int.class, int.class},
             RenderPipelines.GUI_TEXTURED, textureId, x, y, u, v, width, height, regionWidth, regionHeight, textureWidth, textureHeight);
     }
 
     private static void drawText(Object context, Object font, String text, int x, int y, int color, boolean shadow) {
-        MinecraftReflectionUtil.invokeAny(context, new String[]{"text", "drawString", "drawText"},
+        MinecraftReflectionUtil.invokeAny(context, new String[]{"text", "drawString", "drawText", "method_51433"},
             new Class<?>[]{font.getClass(), String.class, int.class, int.class, int.class, boolean.class},
             font, text, x, y, color, shadow);
     }
 
     private static void fill(Object context, int left, int top, int right, int bottom, int color) {
-        MinecraftReflectionUtil.invokeAny(context, "fill", new Class<?>[]{int.class, int.class, int.class, int.class, int.class}, left, top, right, bottom, color);
+        MinecraftReflectionUtil.invokeAny(context, new String[]{"fill", "method_25294"}, new Class<?>[]{int.class, int.class, int.class, int.class, int.class}, left, top, right, bottom, color);
     }
 
     private static void horizontalLine(Object context, int left, int right, int y, int color) {
-        MinecraftReflectionUtil.invokeAny(context, new String[]{"horizontalLine", "hLine", "drawHorizontalLine"}, new Class<?>[]{int.class, int.class, int.class, int.class}, left, right, y, color);
+        MinecraftReflectionUtil.invokeAny(context, new String[]{"horizontalLine", "hLine", "drawHorizontalLine", "method_51738"}, new Class<?>[]{int.class, int.class, int.class, int.class}, left, right, y, color);
     }
 
     private static void verticalLine(Object context, int x, int top, int bottom, int color) {
-        MinecraftReflectionUtil.invokeAny(context, new String[]{"verticalLine", "vLine", "drawVerticalLine"}, new Class<?>[]{int.class, int.class, int.class, int.class}, x, top, bottom, color);
+        MinecraftReflectionUtil.invokeAny(context, new String[]{"verticalLine", "vLine", "drawVerticalLine", "method_51742"}, new Class<?>[]{int.class, int.class, int.class, int.class}, x, top, bottom, color);
     }
 
     private static void registerTexture(Object textureManager, Object textureId, DynamicTexture texture) {
-        MinecraftReflectionUtil.invokeAny(textureManager, "register", new Class<?>[]{textureId.getClass(), texture.getClass()}, textureId, texture);
+        MinecraftReflectionUtil.invokeAny(textureManager, new String[]{"register", "method_4616"}, new Class<?>[]{textureId.getClass(), texture.getClass()}, textureId, texture);
     }
 
     private static String sha1(String value) {

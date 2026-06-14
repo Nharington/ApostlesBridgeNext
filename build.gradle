@@ -76,6 +76,15 @@ dependencies {
     testRuntimeOnly "org.junit.platform:junit-platform-launcher"
 }
 
+loom {
+    runs {
+        configureEach {
+            vmArg "-Djava.net.preferIPv4Stack=true"
+            vmArg "-Djava.net.preferIPv6Addresses=false"
+        }
+    }
+}
+
 if (usesOfficialNamedRuntime) {
     loom {
         mods {
@@ -198,6 +207,8 @@ tasks.register("generateBuildConfig") {
 
     def modId = project.mod_id
     def modVersion = project.mod_version
+    inputs.property("mod_id", modId)
+    inputs.property("mod_version", modVersion)
 
     doLast {
         def pkg = "com.medua.apostlesbridgenext.generated.gen"

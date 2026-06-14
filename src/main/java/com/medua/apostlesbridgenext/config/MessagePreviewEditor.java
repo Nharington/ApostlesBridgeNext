@@ -121,7 +121,7 @@ public class MessagePreviewEditor extends GuiOptionEditor {
     private static void drawComponentText(Object drawContext, Object font, Component text, int x, int y, int color, boolean shadow) {
         MinecraftReflectionUtil.invokeAny(
             drawContext,
-            new String[]{"text", "drawString", "drawText"},
+            new String[]{"text", "drawString", "drawText", "method_51439"},
             new Class<?>[]{font.getClass(), Component.class, int.class, int.class, int.class, boolean.class},
             font, text, x, y, color, shadow
         );
