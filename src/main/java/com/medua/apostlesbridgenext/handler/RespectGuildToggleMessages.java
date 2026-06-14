@@ -7,7 +7,7 @@ public final class RespectGuildToggleMessages {
     private RespectGuildToggleMessages() { }
 
     public static void sendSettingMessage(String beforeSetting, String afterSetting) {
-        Component message = Component.literal(MessageHandler.getPrefix(true, true))
+        Component message = Component.literal(MessageHandler.getPrefix())
             .append(Component.literal(beforeSetting))
             .append(settingText())
             .append(Component.literal(afterSetting));

@@ -16,6 +16,7 @@ import java.util.List;
 
 public class MessageHandler {
     public static final String MOD_PREFIX = "AB";
+    private static final String PREFIX_SEPARATOR = " > ";
 
     ApostlesBridgeNextClient apostlesBridge;
     public MessageHandler(ApostlesBridgeNextClient apostlesBridge) {
@@ -23,11 +24,15 @@ public class MessageHandler {
     }
 
     public static String getPrefix() {
-        return getPrefix(true, false);
+        return getPrefix(true);
     }
 
     public static String getPrefix(boolean colors, boolean brackets) {
-        return (brackets ? "\u00A7r[" : "") + (colors ? "\u00A75" : "\u00A7r") + MOD_PREFIX + "\u00A7r" + (brackets ? "] " : " > ");
+        return getPrefix(colors);
+    }
+
+    public static String getPrefix(boolean colors) {
+        return (colors ? "\u00A75" : "\u00A7r") + MOD_PREFIX + "\u00A7r" + PREFIX_SEPARATOR;
     }
 
     public static void sendMessage(Component message) {
@@ -49,7 +54,7 @@ public class MessageHandler {
     }
 
     public static void sendSystemMessage(String message) {
-        sendMessage(Component.literal(getPrefix(true, true)).append(Component.literal(message)));
+        sendMessage(Component.literal(getPrefix()).append(Component.literal(message)));
     }
 
     public static void sendMessageWithLinks(String message, boolean prefix, List<String> urls) {

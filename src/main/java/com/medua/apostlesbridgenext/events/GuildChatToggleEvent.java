@@ -28,7 +28,7 @@ public class GuildChatToggleEvent {
 
             if (enabled) {
                 if (apostlesBridge.getWebSocketHandler().canReconnectAfterGuildChatEnabled()) {
-                    RespectGuildToggleMessages.sendSettingMessage("Reconnecting to WebSocket because ", " is enabled...");
+                    RespectGuildToggleMessages.sendSettingMessage("Reconnecting to WebSocket because ", " is enabled..");
                     apostlesBridge.getWebSocketHandler().reconnectAfterGuildChatEnabled();
                 } else {
                     apostlesBridge.getWebSocketHandler().restartWebSocket();

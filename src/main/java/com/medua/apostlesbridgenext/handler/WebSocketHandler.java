@@ -104,6 +104,7 @@ public class WebSocketHandler {
         final long generation = connectionGeneration.incrementAndGet();
 
         LOGGER.debug("Trying to connect to WebSocket (" + getServerURL() + ") [gen=" + generation + "]");
+        sendConnectionDebugMessage("Connecting to WebSocket..");
         try {
             webSocketClient = new WebSocketClient(new URI(getServerURL())) {
                 @Override
@@ -113,10 +114,10 @@ public class WebSocketHandler {
                     }
                     connecting.set(false);
                     LOGGER.debug("Connected to WebSocket! [gen=" + generation + "]");
-                    if (announceNextConnect) {
-                        announceNextConnect = false;
+                    if (announceNextConnect || Config.isConnectionDebugMessagesEnabled()) {
                         MessageHandler.sendSystemMessage("WebSocket connected.");
                     }
+                    announceNextConnect = false;
                 }
 
                 @Override
@@ -188,6 +189,7 @@ public class WebSocketHandler {
                     }
                     connecting.set(false);
                     LOGGER.debug("Disconnected from WebSocket: " + reason + " [gen=" + generation + "]");
+                    sendConnectionDebugMessage(connectionClosedMessage(reason));
                     if (shouldConnect()) {
                         scheduleReconnect();
                     }
@@ -200,6 +202,7 @@ public class WebSocketHandler {
                     }
                     connecting.set(false);
                     LOGGER.error("WebSocket error: " + e.getMessage() + " [gen=" + generation + "]");
+                    sendConnectionDebugMessage(connectionFailedMessage(e));
                     if (shouldConnect()) {
                         scheduleReconnect();
                     }
@@ -208,6 +211,7 @@ public class WebSocketHandler {
         } catch (URISyntaxException e) {
             connecting.set(false);
             LOGGER.error("An error occured trying to connect to the WebSocket (" + e.getMessage() + ")");
+            sendConnectionDebugMessage(connectionFailedMessage(e));
             scheduleReconnect();
             return;
         }
@@ -217,6 +221,7 @@ public class WebSocketHandler {
         } catch (Exception e) {
             connecting.set(false);
             LOGGER.error("Failed to start WebSocket connect: " + e.getMessage());
+            sendConnectionDebugMessage(connectionFailedMessage(e));
             scheduleReconnect();
         }
     }
@@ -295,6 +300,7 @@ public class WebSocketHandler {
 
         reconnectTimer = new Timer();
         reconnectScheduled = true;
+        sendConnectionDebugMessage("Reconnecting to WebSocket in 30 seconds..");
         reconnectTimer.schedule(new TimerTask() {
             @Override
             public void run() {
@@ -374,7 +380,7 @@ public class WebSocketHandler {
 
         if (previousGeneralMode == 0 || wasBlockedByGuildChatToggle) {
             if (canStartConnection()) {
-                MessageHandler.sendSystemMessage("Reconnecting to WebSocket...");
+                MessageHandler.sendSystemMessage("Reconnecting to WebSocket..");
                 announceNextConnect = true;
             }
             restartWebSocket();
@@ -408,6 +414,7 @@ public class WebSocketHandler {
         connecting.set(false);
 
         if (webSocketClient != null && !webSocketClient.isClosed()) {
+            sendConnectionDebugMessage("WebSocket disconnected for restart.");
             try {
                 webSocketClient.close();
             } catch (Exception ignored) {
@@ -444,6 +451,7 @@ public class WebSocketHandler {
         connecting.set(false);
 
         if (webSocketClient != null && !webSocketClient.isClosed()) {
+            sendConnectionDebugMessage("WebSocket disconnected.");
             try {
                 webSocketClient.close();
             } catch (Exception ignored) {
@@ -451,5 +459,26 @@ public class WebSocketHandler {
         }
 
         this.forceDisconnected = true;
+    }
+
+    private void sendConnectionDebugMessage(String message) {
+        if (Config.isConnectionDebugMessagesEnabled()) {
+            MessageHandler.sendSystemMessage(message);
+        }
+    }
+
+    private String connectionFailedMessage(Exception exception) {
+        String message = exception.getMessage();
+        if (message == null || message.isBlank()) {
+            return "WebSocket connection failed.";
+        }
+        return "WebSocket connection failed: " + message;
+    }
+
+    private String connectionClosedMessage(String reason) {
+        if (reason == null || reason.isBlank()) {
+            return "WebSocket disconnected.";
+        }
+        return "WebSocket disconnected: " + reason;
     }
 }

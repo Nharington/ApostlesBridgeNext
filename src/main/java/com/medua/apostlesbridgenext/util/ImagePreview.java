@@ -86,7 +86,7 @@ public final class ImagePreview {
             return;
         }
         if (previewWidth <= 0 || previewHeight <= 0) {
-            drawMessage(context, client, "Loading image...");
+            drawMessage(context, client, "Loading image..");
             return;
         }
 

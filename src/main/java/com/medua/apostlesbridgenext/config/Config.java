@@ -31,6 +31,7 @@ public class Config {
     private static boolean guildChatEnabled = true;
     private static int imagePreviewSize = ImagePreviewSize.MEDIUM.ordinal();
     private static boolean emojiConversionEnabled = false;
+    private static boolean connectionDebugMessagesEnabled = false;
 
     private static FormattingColors formattingColors = new FormattingColors();
     private static FormattingNames formattingNames = new FormattingNames();
@@ -54,6 +55,7 @@ public class Config {
             guildChatEnabled = json.has("guildChatEnabled") ? json.get("guildChatEnabled").getAsBoolean() : guildChatEnabled;
             imagePreviewSize = json.has("imagePreviewSize") ? clampPreviewSize(json.get("imagePreviewSize").getAsInt()) : imagePreviewSize;
             emojiConversionEnabled = json.has("emojiConversionEnabled") ? json.get("emojiConversionEnabled").getAsBoolean() : emojiConversionEnabled;
+            connectionDebugMessagesEnabled = json.has("connectionDebugMessagesEnabled") ? json.get("connectionDebugMessagesEnabled").getAsBoolean() : connectionDebugMessagesEnabled;
 
             if (json.has("formatting")) {
                 JsonObject formatting = json.getAsJsonObject("formatting");
@@ -107,6 +109,7 @@ public class Config {
         json.addProperty("guildChatEnabled", guildChatEnabled);
         json.addProperty("imagePreviewSize", imagePreviewSize);
         json.addProperty("emojiConversionEnabled", emojiConversionEnabled);
+        json.addProperty("connectionDebugMessagesEnabled", connectionDebugMessagesEnabled);
 
         JsonObject formatting = new JsonObject();
         JsonObject formattingColors = new JsonObject();
@@ -177,6 +180,10 @@ public class Config {
         return emojiConversionEnabled;
     }
 
+    public static boolean isConnectionDebugMessagesEnabled() {
+        return connectionDebugMessagesEnabled;
+    }
+
     public static String getGeneralModeText() {
         return GENERAL_MODES[generalMode];
     }
@@ -211,6 +218,10 @@ public class Config {
 
     public static void setEmojiConversionEnabled(boolean enabled) {
         emojiConversionEnabled = enabled;
+    }
+
+    public static void setConnectionDebugMessagesEnabled(boolean enabled) {
+        connectionDebugMessagesEnabled = enabled;
     }
 
     public static void nextGeneralMode() {

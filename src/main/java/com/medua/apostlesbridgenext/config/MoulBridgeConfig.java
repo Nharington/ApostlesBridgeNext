@@ -50,6 +50,10 @@ public class MoulBridgeConfig extends Config {
     @Category(name = "Formatting", desc = "Formatting Settings")
     public Formatting formatting = new Formatting();
 
+    @Expose
+    @Category(name = "Dev", desc = "Developer Settings")
+    public Dev dev = new Dev();
+
     public static class General {
 
         @Expose
@@ -124,6 +128,17 @@ public class MoulBridgeConfig extends Config {
         )
         @ConfigEditorBoolean
         public boolean emojiConversionEnabled = false;
+    }
+
+    public static class Dev {
+
+        @Expose
+        @ConfigOption(
+            name = "Connection Debug Messages",
+            desc = "Show WebSocket connection attempts, successes, failures, and disconnects in chat"
+        )
+        @ConfigEditorBoolean
+        public boolean connectionDebugMessages = false;
     }
 
     public static class Colors {
