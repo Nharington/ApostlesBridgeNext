@@ -100,7 +100,7 @@ public class MoulBridgeConfig extends Config {
         public Prefixes prefixes = new Prefixes();
 
         @Expose
-        @ConfigOption(name = "Emoji Conversion", desc = "Convert common Discord emoji shortcodes into emoji\n\u00A7836 emojis converted. Request more in Bridge (not all will be added).")
+        @ConfigOption(name = "Emoji Conversion", desc = "Convert Discord :shortcode: text into colored emoji in chat\n1556 packed Twemoji glyphs. Request more in Bridge.")
         @ConfigEditorBoolean
         public boolean emojiConversionEnabled = false;
     }
